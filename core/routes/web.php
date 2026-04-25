@@ -30,7 +30,7 @@ Route::middleware('auth')->controller(SearchController::class)->group(function (
 
 Route::controller(SiteController::class)->group(function () {
     Route::get('/', 'index');
-    Route::get('/product/{id}', 'product');
+    Route::get('/pack/{id}', 'pack');
 });
 
 Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])

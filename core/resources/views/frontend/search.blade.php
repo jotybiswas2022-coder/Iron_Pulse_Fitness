@@ -18,7 +18,7 @@ $currency = $settings?->currency ?? '৳';
                 Search result for:
                 <span class="text-primary">"{{ $query }}"</span>
             </h5>
-            <small class="text-muted">{{ $products->total() }} product(s) found</small>
+            <small class="text-muted">{{ $packs->total() }} product(s) found</small>
         </div>
 
         <div class="d-flex gap-1 mt-2 mt-md-0 flex-wrap align-items-center">
@@ -87,42 +87,36 @@ $currency = $settings?->currency ?? '৳';
             </div>
         </div>
 
-        <!-- Products -->
+        <!-- Packs -->
         <div class="col-md-9">
             <div class="row g-3" id="productWrapper">
 
-                @forelse($products as $product)
+                @forelse($packs as $pack)
                 <div class="col-6 col-sm-4 col-lg-3 product-item"
-                    data-category="{{ $product->category_id }}"
-                    data-price="{{ $product->price }}">
+                    data-category="{{ $pack->category_id }}"
+                    data-price="{{ $pack->pack_price }}">
                     <div class="card product-card h-100 border-0 shadow-sm position-relative">
 
-                        <a href="{{ url('/product/'.$product->id) }}" class="stretched-link"></a>
+                        <a href="{{ url('/pack/'.$pack->id) }}" class="stretched-link"></a>
 
                         <div class="position-relative overflow-hidden product-img-wrapper">
-                            <img src="{{ config('app.storage_url') }}{{ $product->image }}"
+                            <img src="{{ config('app.storage_url') }}{{ $pack->image }}"
                                 class="card-img-top product-img"
-                                alt="{{ $product->name }}">
+                                alt="{{ $pack->name }}">
 
                             <div class="d-flex justify-content-between position-absolute top-0 start-0 w-100 p-1">
-                                @if($product->discount > 0)
-                                <span class="badge badge-discount">-{{ $product->discount }}%</span>
+                                @if($pack->discount > 0)
+                                <span class="badge badge-discount">-{{ $pack->discount }}%</span>
                                 @endif
-                                <span class="badge badge-price ms-auto">{{ $product->price }} {{ $currency }}</span>
+                                <span class="badge badge-price ms-auto">{{ $pack->pack_price }} {{ $currency }}</span>
                             </div>
                         </div>
 
                         <div class="card-body d-flex flex-column py-2">
-                            <h6 class="fw-semibold mb-1 product-title">{{ Str::limit($product->name,50) }}</h6>
-
-                            @if($product->stock > 0)
-                            <small class="stock-in mb-2 d-block"><i class="bi bi-check-circle"></i> In Stock</small>
-                            @else
-                            <small class="stock-out mb-2 d-block"><i class="bi bi-x-circle"></i> Out of Stock</small>
-                            @endif
+                            <h6 class="fw-semibold mb-1 product-title">{{ Str::limit($pack->name,50) }}</h6>
 
                             <button class="btn btn-sm btn-primary mt-auto quick-view-btn w-100"
-                                data-id="{{ $product->id }}">
+                                data-id="{{ $pack->id }}">
                                 <i class="bi bi-eye"></i> Quick View
                             </button>
                         </div>
@@ -132,7 +126,7 @@ $currency = $settings?->currency ?? '৳';
                 @empty
                 <div class="col-12 text-center py-4 text-light">
                     <i class="bi bi-search text-danger" style="font-size:50px;"></i>
-                    <h5 class="fw-bold text-danger mt-2 mb-1">No product found</h5>
+                    <h5 class="fw-bold text-danger mt-2 mb-1">No pack found</h5>
                     <p class="text-muted small">Try searching with different keywords.</p>
                     <a href="{{ url('/') }}" class="btn btn-primary btn-sm mt-1">
                         <i class="bi bi-house"></i> Continue Shopping
@@ -142,9 +136,9 @@ $currency = $settings?->currency ?? '৳';
 
             </div>
 
-            @if($products->hasPages())
+            @if($packs->hasPages())
             <div class="d-flex justify-content-center mt-4">
-                {{ $products->withQueryString()->links() }}
+                {{ $packs->withQueryString()->links() }}
             </div>
             @endif
         </div>
