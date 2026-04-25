@@ -8,10 +8,9 @@ class OrderDetail extends Model
 {
     protected $fillable = [
         'order_id',
-        'product_id',
-        'product_name',
-        'product_quantity',
-        'product_price',
+        'pack_id',
+        'pack_name',
+        'pack_price',
         'status'
     ];
 
@@ -21,9 +20,9 @@ class OrderDetail extends Model
         return $this->belongsTo(Order::class);
     }
 
-    public function product()
+    public function Pack()
     {
-        return $this->belongsTo(\App\Models\Product::class);
+        return $this->belongsTo(\App\Models\Pack::class);
     }
 }
 

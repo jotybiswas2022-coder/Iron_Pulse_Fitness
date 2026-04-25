@@ -14,10 +14,9 @@ return new class extends Migration
         Schema::create('order_details', function (Blueprint $table) {
             $table->id();
             $table->integer('order_id');
-            $table->integer('product_id');
-            $table->string('product_name');
-            $table->string('product_quantity');
-            $table->string('product_price');
+            $table->integer('pack_id');
+            $table->string('pack_name');
+            $table->string('pack_price');
             $table->string('status')->default('Processing');
             $table->timestamps();
         });

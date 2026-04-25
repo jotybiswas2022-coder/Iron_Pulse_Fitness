@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderDetail;
-use App\Models\Product;
+use App\Models\Pack;
 
 class OrderController extends Controller
 {
@@ -33,21 +33,17 @@ class OrderController extends Controller
 
                 // Stock check
                 foreach ($order->orderdetails as $item) {
-                    $product = Product::find($item->product_id);
+                    $pack = Pack::find($item->pack_id);
 
-                    if (!$product) {
-                        abort(400, 'Product not found');
-                    }
-
-                    if ($product->stock < $item->product_quantity) {
-                        abort(400, 'Insufficient stock for ' . $item->product_name);
+                    if (!$pack) {
+                        abort(400, 'pack not found');
                     }
                 }
 
                 // Deduct stock
                 foreach ($order->orderdetails as $item) {
-                    Product::where('id', $item->product_id)
-                        ->decrement('stock', $item->product_quantity);
+                    Pack::where('id', $item->pack_id)
+                        ->decrement('stock', $item->pack_quantity);
                 }
 
                 // Update order
@@ -82,8 +78,8 @@ class OrderController extends Controller
                 // If approved, restore stock
                 if (strtolower(trim($order->status)) === 'approved') {
                     foreach ($order->orderdetails as $item) {
-                        Product::where('id', $item->product_id)
-                            ->increment('stock', $item->product_quantity);
+                        Pack::where('id', $item->pack_id)
+                            ->increment('stock', $item->pack_quantity);
                     }
                 }
 

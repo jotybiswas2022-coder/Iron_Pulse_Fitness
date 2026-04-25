@@ -64,59 +64,59 @@ $slider = Slider::latest()->first();
 
 </section>
 
-<!-- ================= PRODUCTS ================= -->
+<!-- ================= PACKS ================= -->
 <section id="products" class="products-section">
     <div class="products-container">
 
         <div class="section-header fade-in-up visible">
-            <h2>Latest Products</h2>
-            <p>Browse all available products</p>
+            <h2>Latest Packs</h2>
+            <p>Browse all available packs</p>
         </div>
 
         <div class="products-grid">
 
-            @forelse(($products ?? collect())->sortByDesc('created_at') as $product)
+            @forelse(($packs ?? collect())->sortByDesc('created_at') as $pack)
             <div class="product-card fade-in-up visible">
 
-                @if($product->discount > 0)
+                @if($pack->discount > 0)
                     <span class="product-badge">
-                        {{ $product->discount }}% OFF
+                        {{ $pack->discount }}% OFF
                     </span>
                 @endif
 
                 <div class="product-img-wrap">
-                    <a href="{{ url('/product/'.$product->id) }}">
-                        <img src="{{ $product->image ? config('app.storage_url').$product->image : asset('frontend/img/no-image.png') }}" alt="">
+                    <a href="{{ url('/pack/'.$pack->id) }}">
+                        <img src="{{ $pack->image ? config('app.storage_url').$pack->image : asset('frontend/img/no-image.png') }}" alt="">
                     </a>
                 </div>
 
                 <div class="product-info">
                     <div class="product-name">
-                        {{ $product->name }}
+                        {{ $pack->name }}
                     </div>
 
                     <div class="product-price-row">
                         <div class="product-price">
-                            @if($product->discount > 0)
+                            @if($pack->discount > 0)
                                 <span class="old">
-                                    {{ $currency }} {{ number_format($product->price,2) }}
+                                    {{ $currency }} {{ number_format($pack->pack_price,2) }}
                                 </span><br>
                                 <span class="current">
-                                    {{ $currency }} {{ number_format($product->price - ($product->price*$product->discount/100),2) }}
+                                    {{ $currency }} {{ number_format($pack->pack_price - ($pack->pack_price*$pack->discount/100),2) }}
                                 </span>
                             @else
                                 <span class="current">
-                                    {{ $currency }} {{ number_format($product->price,2) }}
+                                    {{ $currency }} {{ number_format($pack->pack_price,2) }}
                                 </span>
                             @endif
                         </div>
 
-                        @if(function_exists('IsAddedToCart') && IsAddedToCart(auth()->id(), $product->id))
-                            <a href="{{ url('/product/'.$product->id) }}" class="product-buy in-cart">
+                        @if(function_exists('IsAddedToCart') && IsAddedToCart(auth()->id(), $pack->id))
+                            <a href="{{ url('/pack/'.$pack->id) }}" class="product-buy in-cart">
                                 <i class="bi bi-check-lg"></i>
                             </a>
                         @else
-                            <a href="{{ url('/product/'.$product->id) }}" class="product-buy">
+                            <a href="{{ url('/pack/'.$pack->id) }}" class="product-buy">
                                 <i class="bi bi-cart-plus"></i>
                             </a>
                         @endif
@@ -125,7 +125,7 @@ $slider = Slider::latest()->first();
             </div>
             @empty
             <div class="text-center text-white py-5 w-100">
-                <h5>No Products Available</h5>
+                <h5>No packs Available</h5>
             </div>
             @endforelse
 

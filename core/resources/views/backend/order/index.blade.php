@@ -31,11 +31,11 @@
                     <th>#</th>
                     <th class="text-start">Customer</th>
                     <th>Phone</th>
-                    <th>Products × Quantity</th>
+                    <th>Pack </th>
                     <th>Total</th>
                     <th>Payment</th>
                     <th>Status</th>
-                    <th>Record Time</th>
+                    <th>Remaining</th>
                     <th>Actions</th>
                 </tr>
                 </thead>

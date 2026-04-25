@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\Contact;
 use App\Models\Order;
-use App\Models\Product;
+use App\Models\Pack;
 
 class UserController extends Controller
 {
@@ -22,8 +22,8 @@ class UserController extends Controller
     function manage($type, $id){
         if($type == 'plus') {
             $cart = Cart::findOrFail($id);
-            $product_id = $cart->product_id;
-            $stock = Product::find($product_id)->stock;
+            $pack_id = $cart->pack_id;
+            $stock = Pack::find($pack_id)->stock;
             if($stock == $cart->quantity){
                 return redirect()->back()->with('error', 'Out of Stock!');
             } 
@@ -43,17 +43,17 @@ class UserController extends Controller
         return redirect('/cart')->with('success', 'Cart Updated Successfully!');
     }
 
-    public function addcart($product_id)
+    public function addcart($pack_id)
     {
         $user_id = auth()->user()->id;
 
         Cart::create([
             'user_id'   => $user_id,
-            'product_id'=> $product_id,
+            'pack_id'=> $pack_id,
             'quantity'  => 1
         ]);
 
-        return redirect('/product/'.$product_id)->with('success', 'Added to Cart Successfully');
+        return redirect('/pack/'.$pack_id)->with('success', 'Added to Cart Successfully');
     }
 
     function billing(){

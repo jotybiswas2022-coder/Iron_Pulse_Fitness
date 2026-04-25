@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('email');
             $table->string('phone');
             $table->text('address');
-            $table->decimal('product_price_after_discount', 15, 2);
+            $table->decimal('pack_price_after_discount', 15, 2);
             $table->decimal('delivery_charge', 15, 2);
             $table->decimal('tax', 15, 2);
             $table->decimal('total_price', 15, 2);

@@ -13,7 +13,7 @@ class Order extends Model
         'email',
         'phone',
         'address',
-        'product_price_after_discount',
+        'pack_price_after_discount',
         'delivery_charge',
         'tax',
         'total_price',

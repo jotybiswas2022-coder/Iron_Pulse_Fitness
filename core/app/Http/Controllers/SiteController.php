@@ -14,18 +14,18 @@ class SiteController extends Controller
         return view('frontend.index', compact('packs'));
     }
 
-    // Product detail page
-    function product($id)
+    // Pack detail page
+    function pack($id)
     {
 
-        $product = Product::findOrFail($id);
+        $pack = Pack::findOrFail($id);
 
-        $otherProducts = Product::where('category_id', $product->category_id)
+        $otherPacks = Pack::where('category_id', $pack->category_id)
                                 ->where('id', '!=', $id)
                                 ->inRandomOrder()
                                 ->limit(8)
                                 ->get();
 
-        return view('frontend.product', compact('product', 'otherProducts'));
+        return view('frontend.pack', compact('pack', 'otherPacks'));
     }
 }

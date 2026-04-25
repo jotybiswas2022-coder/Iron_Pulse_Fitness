@@ -28,7 +28,7 @@ class OrderManageController extends Controller
         $delivery_charge = $setting?->delivery_charge ?? 0;
         $tax_percentage  = $setting?->tax_percentage ?? 0;
 
-        $carts = Cart::with('product')->where('user_id', $user_id)->get();
+        $carts = Cart::with('pack')->where('user_id', $user_id)->get();
 
         if ($carts->isEmpty()) {
             return redirect('/cart')->with('error', 'Your cart is empty!');
@@ -37,16 +37,16 @@ class OrderManageController extends Controller
         $subtotal_after_discount = 0;
 
         foreach ($carts as $cart) {
-            $product = $cart->product;
+            $pack = $cart->pack;
 
-            if (!$product) continue;
+            if (!$pack) continue;
 
-            if ($cart->quantity > $product->stock) {
-                return redirect()->back()->with('error', "Product '{$product->name}' is out of stock!");
+            if ($cart->quantity > $pack->stock) {
+                return redirect()->back()->with('error', "Pack '{$pack->name}' is out of stock!");
             }
 
-            $discount = $product->discount ?? 0;
-            $price_after_discount = $product->price * (100 - $discount) / 100;
+            $discount = $pack->discount ?? 0;
+            $price_after_discount = $pack->price * (100 - $discount) / 100;
             $subtotal_after_discount += $price_after_discount * $cart->quantity;
         }
 
@@ -60,7 +60,7 @@ class OrderManageController extends Controller
             'email'                        => $request->email,
             'phone'                        => $request->phone,
             'address'                      => $request->address,
-            'product_price_after_discount' => $subtotal_after_discount,
+            'pack_price_after_discount' => $subtotal_after_discount,
             'delivery_charge'              => $delivery_charge,
             'tax'                          => $tax_amount,
             'total_price'                  => $total_price,
@@ -68,14 +68,14 @@ class OrderManageController extends Controller
         ]);
 
         foreach ($carts as $cart) {
-            if (!$cart->product) continue;
+            if (!$cart->pack) continue;
 
             OrderDetail::create([
                 'order_id'         => $order->id,
-                'product_id'       => $cart->product_id,
-                'product_name'     => $cart->product->name,
-                'product_quantity' => $cart->quantity,
-                'product_price'    => $cart->product->price,
+                'pack_id'       => $cart->pack_id,
+                'pack_name'     => $cart->pack->name,
+                'pack_quantity' => $cart->quantity,
+                'pack_price'    => $cart->pack->price,
                 'status'           => 'processing',
             ]);
         }
