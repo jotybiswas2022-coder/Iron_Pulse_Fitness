@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product;
+use App\Models\Pack;
 
 class SiteController extends Controller
 {
     // Homepage
     function index()
     {
-        $products = Product::all();
-        return view('frontend.index', compact('products'));
+        $packs = Pack::all();
+        return view('frontend.index', compact('packs'));
     }
 
     // Product detail page

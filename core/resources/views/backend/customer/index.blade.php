@@ -13,8 +13,8 @@
 
     <div class="row m-3 align-items-center mb-3">
         <div class="col-md-6">
-            <h2 class="fw-bold">Customer List</h2>
-            <p class="text-muted mb-0">Manage all your customers efficiently</p>
+            <h2 class="fw-bold">Member List</h2>
+            <p class="text-muted mb-0">Manage all your members  efficiently</p>
         </div>
         <div class="col-md-6 text-end">
             <a href="{{ url('admin/customers/create') }}" class="btn btn-primary">

@@ -5,7 +5,7 @@
 @php
     use App\Models\Setting;
     use App\Models\Order;
-    use App\Models\Product;
+    use App\Models\Pack;
     use App\Models\User;
 
     $settings = Setting::first();
@@ -39,7 +39,7 @@
             $stats = [
                 ['title'=>'Total Users','count'=>User::count(),'icon'=>'bi-people','bg'=>'linear-gradient(135deg, #4e73df, #1cc88a)'],
                 ['title'=>'Total Orders','count'=>Order::count(),'icon'=>'bi-basket','bg'=>'linear-gradient(135deg, #36b9cc, #2c9faf)'],
-                ['title'=>'Products','count'=>Product::count(),'icon'=>'bi-box','bg'=>'linear-gradient(135deg, #f6c23e, #dda20a)'],
+                ['title'=>'Packs','count'=>Pack::count(),'icon'=>'bi-box','bg'=>'linear-gradient(135deg, #f6c23e, #dda20a)'],
                 ['title'=>'Revenue','count'=>$currency,'icon'=>'bi-coin','bg'=>'linear-gradient(135deg, #e74a3b, #c53030)','currency'=>$currency]
             ];
         @endphp

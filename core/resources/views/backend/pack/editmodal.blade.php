@@ -1,23 +1,23 @@
-<div class="modal fade" id="editModal{{ $product->id }}" tabindex="-1"
-     aria-labelledby="editModalLabel{{ $product->id }}" aria-hidden="true">
+<div class="modal fade" id="editModal{{ $pack->id }}" tabindex="-1"
+     aria-labelledby="editModalLabel{{ $pack->id }}" aria-hidden="true">
 
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-4">
 
-            <!-- Modal Header -->
+            <!-- Header -->
             <div class="modal-header bg-gradient-primary text-white rounded-top-4">
                 <h5 class="modal-title fw-semibold"
-                    id="editModalLabel{{ $product->id }}">
+                    id="editModalLabel{{ $pack->id }}">
                     <i class="bi bi-pencil-square me-2"></i>
-                    Edit Product
+                    Edit Pack
                 </h5>
                 <button type="button"
                         class="btn-close btn-close-white"
                         data-bs-dismiss="modal"></button>
             </div>
 
-            <!-- Form: Use update route -->
-            <form action="{{ url('admin/product/update/'.$product->id) }}"
+            <!-- Form -->
+            <form action="{{ url('admin/pack/update/'.$pack->id) }}"
                   method="POST"
                   enctype="multipart/form-data">
                 @csrf
@@ -25,22 +25,17 @@
                 <div class="modal-body px-3 py-3">
                     <div class="row g-3">
 
-                        <!-- Product Name -->
+                        <!-- Pack Name -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-box-seam me-1 text-secondary"></i>
-                                Product Name <span class="text-danger">*</span>
+                                Pack Name <span class="text-danger">*</span>
                             </label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light">
-                                    <i class="bi bi-box"></i>
-                                </span>
-                                <input type="text"
-                                       class="form-control"
-                                       name="name"
-                                       value="{{ $product->name }}"
-                                       required>
-                            </div>
+                            <input type="text"
+                                   class="form-control"
+                                   name="name"
+                                   value="{{ $pack->name }}"
+                                   required>
                         </div>
 
                         <!-- Category -->
@@ -49,49 +44,29 @@
                                 <i class="bi bi-tags me-1 text-secondary"></i>
                                 Category <span class="text-danger">*</span>
                             </label>
-                            <select name="category_id"
-                                    class="form-select"
-                                    required>
+                            <select name="category_id" class="form-select" required>
                                 <option value="">Select Category</option>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}"
-                                        {{ $product->category_id == $category->id ? 'selected' : '' }}>
+                                        {{ $pack->category_id == $category->id ? 'selected' : '' }}>
                                         {{ $category->name }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <!-- Base Price -->
+                        <!-- Pack Type -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">
-                                <i class="bi bi-cash-coin me-1 text-secondary"></i>
-                                Product Base Price <span class="text-danger">*</span>
+                                <i class="bi bi-tags me-1 text-secondary"></i>
+                                Pack Type <span class="text-danger">*</span>
                             </label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light">৳</span>
-                                <input type="number"
-                                       class="form-control"
-                                       name="base_price"
-                                       value="{{ $product->base_price }}"
-                                       required>
-                            </div>
-                        </div>
-
-                        <!-- Price -->
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">
-                                <i class="bi bi-currency-dollar me-1 text-secondary"></i>
-                                Product Price <span class="text-danger">*</span>
-                            </label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light">৳</span>
-                                <input type="number"
-                                       class="form-control"
-                                       name="price"
-                                       value="{{ $product->price }}"
-                                       required>
-                            </div>
+                            <select name="type" class="form-select" required>
+                                <option value="">Select Pack Type</option>
+                                <option value="basic" {{ $pack->type == 'basic' ? 'selected' : '' }}>Basic</option>
+                                <option value="standard" {{ $pack->type == 'standard' ? 'selected' : '' }}>Standard</option>
+                                <option value="premium" {{ $pack->type == 'premium' ? 'selected' : '' }}>Premium</option>
+                            </select>
                         </div>
 
                         <!-- Discount -->
@@ -101,31 +76,43 @@
                                 Discount (%)
                             </label>
                             <div class="input-group">
-                                <span class="input-group-text bg-light">
-                                    <i class="bi bi-percent"></i>
-                                </span>
                                 <input type="number"
                                        class="form-control"
                                        name="discount"
-                                       value="{{ $product->discount ?? 0 }}"
+                                       value="{{ $pack->discount }}"
                                        min="0" max="100">
+                                <span class="input-group-text bg-light">%</span>
                             </div>
                         </div>
 
-                        <!-- Stock -->
+                        <!-- Total Cost -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">
-                                <i class="bi bi-boxes me-1 text-secondary"></i>
-                                Product Stock <span class="text-danger">*</span>
+                                <i class="bi bi-cash-coin me-1 text-secondary"></i>
+                                Total Cost <span class="text-danger">*</span>
                             </label>
                             <div class="input-group">
-                                <span class="input-group-text bg-light">
-                                    <i class="bi bi-hash"></i>
-                                </span>
+                                <span class="input-group-text bg-light">৳</span>
                                 <input type="number"
                                        class="form-control"
-                                       name="stock"
-                                       value="{{ $product->stock }}"
+                                       name="total_cost"
+                                       value="{{ $pack->total_cost }}"
+                                       required>
+                            </div>
+                        </div>
+
+                        <!-- Pack Price -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-currency-dollar me-1 text-secondary"></i>
+                                Pack Price <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">৳</span>
+                                <input type="number"
+                                       class="form-control"
+                                       name="pack_price"
+                                       value="{{ $pack->pack_price }}"
                                        required>
                             </div>
                         </div>
@@ -134,38 +121,39 @@
                         <div class="col-12">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-card-text me-1 text-secondary"></i>
-                                Product Details
+                                Pack Details
                             </label>
                             <textarea class="form-control editor"
                                       name="details"
-                                      rows="4">{{ $product->details }}</textarea>
+                                      rows="4">{{ $pack->details }}</textarea>
                         </div>
 
                         <!-- Image -->
                         <div class="col-12">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-image me-1 text-secondary"></i>
-                                Product Image
+                                Pack Image
                             </label>
+
                             <input type="file"
                                    class="form-control"
-                                   id="editImage{{ $product->id }}"
+                                   id="editImage{{ $pack->id }}"
                                    name="image"
                                    accept="image/*">
 
                             <!-- Current Image -->
-                            @if($product->image)
+                            @if($pack->image)
                                 <div class="mt-2">
                                     <small class="text-muted">Current Image</small><br>
-                                    <img src="{{ config('app.storage_url') }}{{ $product->image }}"
+                                    <img src="{{ config('app.storage_url') }}{{ $pack->image }}"
                                          class="img-thumbnail rounded shadow-sm mt-1"
                                          style="max-height:120px;">
                                 </div>
                             @endif
 
-                            <!-- New Image Preview -->
+                            <!-- Preview -->
                             <div class="mt-2">
-                                <img id="editPreview{{ $product->id }}"
+                                <img id="editPreview{{ $pack->id }}"
                                      class="img-fluid rounded shadow-sm d-none"
                                      style="max-height:120px;">
                             </div>
@@ -174,17 +162,17 @@
                     </div>
                 </div>
 
-                <!-- Modal Footer -->
+                <!-- Footer -->
                 <div class="modal-footer border-0 px-3 pb-3 flex-wrap">
                     <button type="button"
                             class="btn btn-outline-secondary rounded-pill px-4 mb-2"
                             data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle me-1"></i> Cancel
+                        Cancel
                     </button>
 
                     <button type="submit"
-                            class="btn btn-primary rounded-pill px-4 mb-2">
-                        <i class="bi bi-save me-1"></i> Save Changes
+                            class="btn btn-success rounded-pill px-4 mb-2">
+                        Save Changes
                     </button>
                 </div>
             </form>
@@ -192,11 +180,11 @@
     </div>
 </div>
 
-<!-- Image Preview Script -->
+<!-- Image Preview -->
 <script>
-document.getElementById('editImage{{ $product->id }}')
+document.getElementById('editImage{{ $pack->id }}')
     .addEventListener('change', function(e) {
-        const preview = document.getElementById('editPreview{{ $product->id }}');
+        const preview = document.getElementById('editPreview{{ $pack->id }}');
         const file = e.target.files[0];
 
         if (file) {
@@ -213,28 +201,12 @@ document.getElementById('editImage{{ $product->id }}')
 
 .form-control:focus,
 .form-select:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 0.15rem rgba(99,102,241,0.25);
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 0.15rem rgba(79,70,229,0.25);
 }
 
-.btn {
-    transition: 0.25s ease-in-out;
-}
-
-.btn-primary:hover {
+.btn-success:hover {
     background: #4f46e5;
     border-color: #4f46e5;
-}
-
-/* Modal Responsive */
-@media (max-width: 768px) {
-    .modal-dialog {
-        max-width: 95%;
-        margin: 1.75rem auto;
-    }
-    .modal-footer {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
 }
 </style>

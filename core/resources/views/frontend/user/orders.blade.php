@@ -6,7 +6,7 @@
 use App\Models\Setting;
 $settings = Setting::first();
 $currency = $settings?->currency ?? '৳';
-$delivery = $settings->delivery_charge;
+$delivery = $settings->delivery_charge ?? '0';
 @endphp
 
 @if (session('success'))

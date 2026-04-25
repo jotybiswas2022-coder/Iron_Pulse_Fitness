@@ -76,12 +76,6 @@ use Illuminate\Support\Str;
                         <span>Sliders</span>
                     </a>
                 </li>
-                <li>
-                    <a href="/admin/product" class="{{ request()->is('admin/product') ? 'active' : '' }}">
-                        <i class="bi bi-box-seam"></i>
-                        <span>Products</span>
-                    </a>
-                </li>
                  <li>
                     <a href="/admin/pack" class="{{ request()->is('admin/pack') ? 'active' : '' }}">
                         <i class="bi bi-box-seam"></i>

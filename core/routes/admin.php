@@ -46,16 +46,6 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::get('/settings', [SettingsController::class, 'index']);
     Route::post('/settings', [SettingsController::class, 'update']);
 
-    // Products
-    Route::prefix('product')->controller(ProductController::class)->group(function () {
-        Route::get('/', 'index');               
-        Route::get('/create', 'create');       
-        Route::post('/store', 'store');        
-        Route::get('/edit/{id}', 'edit');       
-        Route::post('/update/{id}', 'update'); 
-        Route::get('/delete/{id}', 'delete'); 
-    });
-
      // Pack
     Route::prefix('pack')->controller(PackController::class)->group(function () {
         Route::get('/', 'index');               
