@@ -47,12 +47,11 @@ $subtotal = 0;
                     <thead>
                         <tr>
                             <th>SL</th>
-                            <th>Pack</th>
                             <th>Name</th>
-                            <th class="text-center">Price</th>
-                            <th class="text-center">Stock</th>
-                            <th class="text-center">Qty</th>
-                            <th class="text-end">Total</th>
+                            <th>Category</th>
+                            <th class="text-center">Type</th>
+                            <th class="text-center">Pack Price</th>
+                            <th class="text-end">Package</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
@@ -78,47 +77,34 @@ $subtotal = 0;
                         <td data-label="SL">
                             <span class="sl-number">{{ $loop->iteration }}</span>
                         </td>
+                        <td data-label="Name">
+                            <div class="product-name">{{ $pack->name }}</div>
+                        </td>
+                        <td data-label="Category">
+                            <div class="product-category">{{ $pack->PackCategory->name ?? 'N/A' }}</div>
+                        </td>
+                        <td data-label="Type" class="text-center">
+                            <span class="type-badge">{{ $pack->type }}</span>
+                        </td>
+                            <td data-label="Pack Price" class="text-center price-cell">
+                                @if($discount > 0)
+                                    <span class="price-original">
+                                        {{ number_format($pack->pack_price,2) }} {{ $currency }}
+                                    </span>
+                                    <span class="price-discount">
+                                        {{ number_format($priceAfterDiscount,2) }} {{ $currency }}
+                                    </span>
+                                @else
+                                    <span>
+                                        {{ number_format($pack->pack_price,2) }} {{ $currency }}
+                                    </span>
+                                @endif
+                            </td>
 
                         <td data-label="Pack" class="text-center">
                             <img src="{{ config('app.storage_url') }}{{ $pack->image }}"
                                  class="cart-product-image">
                         </td>
-
-                        <td data-label="Name">
-                            <div class="product-name">{{ $pack->name }}</div>
-                        </td>
-
-                        <td data-label="Price" class="text-center price-cell">
-                            {{ number_format($priceAfterDiscount,2) }} {{ $currency }}
-                        </td>
-
-                        <td data-label="Stock" class="text-center">
-                            @if($pack->stock <= 0)
-                                <span class="stock-badge stock-out">Out</span>
-                            @elseif($pack->stock <= 5)
-                                <span class="stock-badge stock-low">{{ $pack->stock }}</span>
-                            @else
-                                <span class="stock-badge stock-in">{{ $pack->stock }}</span>
-                            @endif
-                        </td>
-
-                        <td data-label="Qty" class="text-center">
-                            @if($pack->stock <= 0)
-                                <span class="out-of-stock-badge">Out of Stock</span>
-                            @else
-                                <div class="qty-control">
-                                    <a href="/manage/minus/{{ $cart->id }}" class="qty-btn">−</a>
-                                    <span class="qty-badge">{{ $cart->quantity }}</span>
-                                    <a href="/manage/plus/{{ $cart->id }}" class="qty-btn">+</a>
-                                </div>
-                            @endif
-                        </td>
-
-                        <td data-label="Total"
-                            class="text-end total-price {{ $pack->stock <= 0 ? 'total-out-stock' : 'total-in-stock' }}">
-                            {{ number_format($total,2) }} {{ $currency }}
-                        </td>
-
                         <td data-label="Action" class="text-center">
                             <a href="/manage/destroy/{{ $cart->id }}" class="remove-btn">
                                 Remove
@@ -133,7 +119,7 @@ $subtotal = 0;
                             <div class="empty-cart">
                                 <i class="bi bi-cart-x"></i>
                                 <h3>Your cart is empty</h3>
-                                <p>Add some products to continue shopping</p>
+                                <p>Add some packs to continue order</p>
                             </div>
                         </td>
                     </tr>
@@ -158,7 +144,7 @@ $subtotal = 0;
             @php
                 $pack = $cart->pack;
                 if(!$pack) continue;
-                $priceAfterDiscount = $pack->price * (100 - ($pack->discount ?? 0)) / 100;
+                $priceAfterDiscount = $pack->pack_price * (100 - ($pack->discount ?? 0)) / 100;
             @endphp
 
             <div class="summary-item">
@@ -169,7 +155,7 @@ $subtotal = 0;
                     <div>
                         <div class="summary-item-name">{{ $pack->name }}</div>
                         <div class="summary-item-detail">
-                            {{ $cart->quantity }} × {{ number_format($priceAfterDiscount,2) }} {{ $currency }}
+                        {{ number_format($priceAfterDiscount,2) }} {{ $currency }}
                         </div>
                     </div>
                 </div>
@@ -182,24 +168,9 @@ $subtotal = 0;
 
             <hr class="summary-divider">
 
-            <div class="summary-row">
-                <span class="label">Subtotal</span>
-                <span class="value">{{ number_format($subtotal,2) }} {{ $currency }}</span>
-            </div>
-
-            <div class="summary-row">
-                <span class="label">Tax ({{ $taxPercent }}%)</span>
-                <span class="value">{{ number_format($taxAmount,2) }} {{ $currency }}</span>
-            </div>
-
-            <div class="summary-row">
-                <span class="label">Delivery</span>
-                <span class="value">{{ number_format($delivery,2) }} {{ $currency }}</span>
-            </div>
-
             <div class="summary-total">
                 <span class="label">Grand Total</span>
-                <span class="value">{{ number_format($grandTotal,2) }} {{ $currency }}</span>
+                <span class="value">{{ number_format($priceAfterDiscount,2) }} {{ $currency }}</span>
             </div>
 
             <a href="/billing" class="btn-checkout">

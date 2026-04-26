@@ -190,22 +190,6 @@ $grandTotal = $subtotal + $taxAmount + $delivery;
             </div>
 
             <!-- Summary -->
-            <div class="dark-card p-4">
-                <div class="summary-row">
-                    <span>Subtotal</span>
-                    <span>{{ number_format($subtotal,2) }} {{ $currency }}</span>
-                </div>
-
-                <div class="summary-row">
-                    <span>Tax ({{ $taxPercent }}%)</span>
-                    <span>{{ number_format($taxAmount,2) }} {{ $currency }}</span>
-                </div>
-
-                <div class="summary-row">
-                    <span>Delivery</span>
-                    <span>{{ number_format($delivery,2) }} {{ $currency }}</span>
-                </div>
-
                 <hr class="summary-divider">
 
                 <div class="summary-total">
