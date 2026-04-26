@@ -33,9 +33,9 @@ $subtotal = 0;
     <div class="page-header">
         <h1>
             <i class="bi bi-cart3"></i>
-            Shopping Cart
+            Ordered Pack
         </h1>
-        <p>Review your products before checkout</p>
+        <p>Review your packs before confirming</p>
     </div>
 
     <div class="cart-layout">
@@ -47,7 +47,7 @@ $subtotal = 0;
                     <thead>
                         <tr>
                             <th>SL</th>
-                            <th>Product</th>
+                            <th>Pack</th>
                             <th>Name</th>
                             <th class="text-center">Price</th>
                             <th class="text-center">Stock</th>
@@ -60,32 +60,32 @@ $subtotal = 0;
                     <tbody>
                     @forelse($carts as $cart)
                     @php
-                        $product = $cart->product;
-                        if(!$product) continue;
+                        $pack = $cart->pack;
+                        if(!$pack) continue;
 
-                        $discount = $product->discount ?? 0;
-                        $priceAfterDiscount = $product->price * (100 - $discount) / 100;
+                        $discount = $pack->discount ?? 0;
+                        $priceAfterDiscount = $pack->pack_price * (100 - $discount) / 100;
 
                         $total = 0;
-                        if($product->stock > 0){
+                        if($pack->stock > 0){
                             $total = $priceAfterDiscount * $cart->quantity;
                             $subtotal += $total;
                         }
                     @endphp
 
-                    <tr class="{{ $product->stock <= 0 ? 'out-of-stock' : '' }}">
+                    <tr class="{{ $pack->stock <= 0 ? 'out-of-stock' : '' }}">
 
                         <td data-label="SL">
                             <span class="sl-number">{{ $loop->iteration }}</span>
                         </td>
 
-                        <td data-label="Product" class="text-center">
-                            <img src="{{ config('app.storage_url') }}{{ $product->image }}"
+                        <td data-label="Pack" class="text-center">
+                            <img src="{{ config('app.storage_url') }}{{ $pack->image }}"
                                  class="cart-product-image">
                         </td>
 
                         <td data-label="Name">
-                            <div class="product-name">{{ $product->name }}</div>
+                            <div class="product-name">{{ $pack->name }}</div>
                         </td>
 
                         <td data-label="Price" class="text-center price-cell">
@@ -93,17 +93,17 @@ $subtotal = 0;
                         </td>
 
                         <td data-label="Stock" class="text-center">
-                            @if($product->stock <= 0)
+                            @if($pack->stock <= 0)
                                 <span class="stock-badge stock-out">Out</span>
-                            @elseif($product->stock <= 5)
-                                <span class="stock-badge stock-low">{{ $product->stock }}</span>
+                            @elseif($pack->stock <= 5)
+                                <span class="stock-badge stock-low">{{ $pack->stock }}</span>
                             @else
-                                <span class="stock-badge stock-in">{{ $product->stock }}</span>
+                                <span class="stock-badge stock-in">{{ $pack->stock }}</span>
                             @endif
                         </td>
 
                         <td data-label="Qty" class="text-center">
-                            @if($product->stock <= 0)
+                            @if($pack->stock <= 0)
                                 <span class="out-of-stock-badge">Out of Stock</span>
                             @else
                                 <div class="qty-control">
@@ -115,7 +115,7 @@ $subtotal = 0;
                         </td>
 
                         <td data-label="Total"
-                            class="text-end total-price {{ $product->stock <= 0 ? 'total-out-stock' : 'total-in-stock' }}">
+                            class="text-end total-price {{ $pack->stock <= 0 ? 'total-out-stock' : 'total-in-stock' }}">
                             {{ number_format($total,2) }} {{ $currency }}
                         </td>
 
@@ -156,18 +156,18 @@ $subtotal = 0;
 
             @foreach($carts as $cart)
             @php
-                $product = $cart->product;
-                if(!$product) continue;
-                $priceAfterDiscount = $product->price * (100 - ($product->discount ?? 0)) / 100;
+                $pack = $cart->pack;
+                if(!$pack) continue;
+                $priceAfterDiscount = $pack->price * (100 - ($pack->discount ?? 0)) / 100;
             @endphp
 
             <div class="summary-item">
                 <div class="summary-item-left">
-                    <img src="{{ config('app.storage_url') }}{{ $product->image }}"
+                    <img src="{{ config('app.storage_url') }}{{ $pack->image }}"
                          class="mini-cart-img">
 
                     <div>
-                        <div class="summary-item-name">{{ $product->name }}</div>
+                        <div class="summary-item-name">{{ $pack->name }}</div>
                         <div class="summary-item-detail">
                             {{ $cart->quantity }} × {{ number_format($priceAfterDiscount,2) }} {{ $currency }}
                         </div>

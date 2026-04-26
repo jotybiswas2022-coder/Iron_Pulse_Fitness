@@ -65,8 +65,8 @@ $user       = auth()->user();
 
 @foreach($carts as $cart)
 @php
-$product = $cart->product;
-$priceAfterDiscount = $product->price * (100 - ($product->discount ?? 0)) / 100;
+$pack = $cart->pack;
+$priceAfterDiscount = $pack->pack_price * (100 - ($pack->discount ?? 0)) / 100;
 $subtotal += $priceAfterDiscount * $cart->quantity;
 @endphp
 @endforeach
@@ -137,14 +137,14 @@ $grandTotal = $subtotal + $taxAmount + $delivery;
 
                 @foreach($carts as $cart)
                 @php
-                    $product = $cart->product;
-                    $priceAfterDiscount = $product->price * (100 - ($product->discount ?? 0)) / 100;
+                    $pack = $cart->pack;
+                    $priceAfterDiscount = $pack->pack_price * (100 - ($pack->discount ?? 0)) / 100;
                 @endphp
 
                 <div class="cart-item">
-                    <img src="{{ config('app.storage_url') }}{{ $product->image }}" class="cart-img">
+                    <img src="{{ config('app.storage_url') }}{{ $pack->image }}" class="cart-img">
                     <div class="flex-grow-1">
-                        <div class="cart-item-name">{{ $product->name }}</div>
+                        <div class="cart-item-name">{{ $pack->name }}</div>
                         <div class="cart-item-meta">
                             {{ $cart->quantity }} × {{ number_format($priceAfterDiscount,2) }} {{ $currency }}
                         </div>
