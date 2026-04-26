@@ -1,7 +1,7 @@
 <?php
 use App\Models\Cart;
 use App\Models\Setting;
-use App\Models\Product;
+use App\Models\Pack;
 
 function cart($user_id = null) {
     $user_id = $user_id ?? auth()->id();
@@ -11,8 +11,8 @@ function cart($user_id = null) {
     return 0;
 }
 
-function IsAddedToCart($user_id, $product_id) {
-    return Cart::where('user_id', $user_id)->where('product_id', $product_id)->exists(); 
+function IsAddedToCart($user_id, $pack_id) {
+    return Cart::where('user_id', $user_id)->where('pack_id', $pack_id)->exists(); 
 }
 
 function currency() {
@@ -21,6 +21,6 @@ function currency() {
 }
 
 function buyprice($id){
-    return Product::find($id)->base_price;
+    return Pack::find($id)->base_price;
 }
 
