@@ -11,17 +11,28 @@
 @php
 use App\Models\Setting;
 use App\Models\Slider;
-use App\Models\Category;
 
 $settings = Setting::first();
 $currency = $settings?->currency ?? '৳';
 $slider = Slider::latest()->first();
 
-// packs grouped by category
-$groupedPacks = ($packs ?? collect())->sortByDesc('created_at')->groupBy('category_id');
+// packs grouped by type (basic, standard, premium)
+$groupedPacks = ($packs ?? collect())
+    ->sortByDesc('created_at')
+    ->groupBy(function ($pack) {
+        return strtolower((string) ($pack->type ?? 'other'));
+    });
 
-// get all categories
-$categories = Category::whereIn('id', $groupedPacks->keys())->get()->keyBy('id');
+$typeLabels = [
+    'basic' => 'Basic Packs',
+    'standard' => 'Standard Packs',
+    'premium' => 'Premium Packs',
+    'other' => 'Other Packs',
+];
+
+$groupedPacks = collect(['basic', 'standard', 'premium', 'other'])
+    ->mapWithKeys(fn ($type) => [$type => $groupedPacks->get($type, collect())])
+    ->filter(fn ($packsByType) => $packsByType->isNotEmpty());
 @endphp
 
 <!-- ================= HERO SLIDER ================= -->
@@ -51,22 +62,22 @@ $categories = Category::whereIn('id', $groupedPacks->keys())->get()->keyBy('id')
 
         <div class="section-header fade-in-up visible">
             <h2>Latest Packs</h2>
-            <p>Browse category wise packs</p>
+            <p>Browse type wise packs</p>
         </div>
 
-        {{-- LOOP CATEGORY --}}
-        @forelse($groupedPacks as $categoryId => $packsByCategory)
+        {{-- LOOP TYPE --}}
+        @forelse($groupedPacks as $type => $packsByType)
 
             <div class="category-section mb-5">
 
                 <h3 class="category-title mb-3">
-                    {{ $categories[$categoryId]->name ?? 'Uncategorized' }}
+                    {{ $typeLabels[$type] ?? ucfirst($type) . ' Packs' }}
                 </h3>
 
                 <div class="products-grid">
 
                     {{-- LOOP PACKS --}}
-                    @foreach($packsByCategory as $pack)
+                    @foreach($packsByType as $pack)
                     <div class="product-card">
 
                         @if($pack->discount > 0)
