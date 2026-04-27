@@ -110,8 +110,8 @@
 
         $days = match($firstItem?->pack_id) {
             1 => 30,
-            2 => 180,
-            3 => 365,
+            3 => 180,
+            2 => 365,
             default => 0,
         };
 

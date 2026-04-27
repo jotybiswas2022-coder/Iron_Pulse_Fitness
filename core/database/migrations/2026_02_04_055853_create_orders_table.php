@@ -19,12 +19,17 @@ return new class extends Migration
             $table->string('email');
             $table->string('phone');
             $table->text('address');
+
             $table->decimal('pack_price_after_discount', 15, 2);
             $table->decimal('delivery_charge', 15, 2);
             $table->decimal('tax', 15, 2);
             $table->decimal('total_price', 15, 2);
-            $table->string('status')->default('Pending');
-            $table->string('payment_method')->nullable(); 
+
+            $table->string('status')->default('pending');
+            $table->timestamp('approved_at')->nullable(); // 🔥 MERGED HERE
+
+            $table->string('payment_method')->nullable();
+
             $table->timestamps();
         });
     }
