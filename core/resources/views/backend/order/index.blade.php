@@ -31,11 +31,11 @@
                     <th>#</th>
                     <th class="text-start">Customer</th>
                     <th>Phone</th>
-                    <th>Pack </th>
+                    <th>Pack</th>
                     <th>Total</th>
                     <th>Payment</th>
                     <th>Status</th>
-                    <th>Remaining</th>
+                    <th>Remaining Time</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -67,8 +67,7 @@
                             <ul class="product-list mb-0 ps-0">
                                 @foreach ($order->orderdetails as $item)
                                     <li>
-                                        <span class="product-name">{{ $item->product_name }}</span>
-                                        <span class="product-qty">× {{ $item->product_quantity }}</span>
+                                        <span class="product-name">{{ $item->pack_name }}</span>
                                     </li>
                                 @endforeach
                             </ul>
@@ -103,13 +102,34 @@
                             </span>
                         </td>
 
-                        <td class="record-time">
-                            {{ $order->created_at->format('d M, Y H:i') }}
-                        </td>
+                        <td>
+@if($order->status === 'approved' && $order->approved_at)
+
+    @php
+        $firstItem = $order->orderdetails->first();
+
+        $days = match($firstItem?->pack_id) {
+            1 => 30,
+            2 => 180,
+            3 => 365,
+            default => 0,
+        };
+
+        $endTime = \Carbon\Carbon::parse($order->approved_at)->addDays($days);
+    @endphp
+
+    <span class="countdown"
+          data-end="{{ $endTime->toIso8601String() }}">
+        Loading...
+    </span>
+
+@else
+    <span class="text-muted">Not started</span>
+@endif
+</td>
 
                         <!-- Actions -->
                         <td class="action-cell">
-
                             @if($status === 'pending')
                                 <button class="btn btn-sm btn-primary btn-approve"
                                         data-id="{{ $order->id }}">
@@ -120,16 +140,9 @@
                                         data-id="{{ $order->id }}">
                                     <i class="bi bi-x-circle"></i> Cancel
                                 </button>
-
-                            @elseif($status === 'approved')
-                                <button class="btn btn-sm btn-success btn-delivered"
-                                        data-id="{{ $order->id }}">
-                                    <i class="bi bi-truck"></i> Order Delivered
-                                </button>
                             @else
                                 <span class="text-muted">No actions</span>
                             @endif
-
                         </td>
                     </tr>
 
@@ -160,23 +173,11 @@
 <script>
 $(function(){
 
-    // ✅ GLOBAL CSRF (important)
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
         }
     });
-
-    function updateStatus(row, text, colorClass){
-        let badge = row.find('.status .badge');
-        badge.attr('class','badge '+colorClass);
-        badge.text(text);
-    }
-
-    function removeActions(row){
-        row.find('.action-cell')
-            .html('<span class="text-muted">No actions</span>');
-    }
 
     // ================= APPROVE =================
     $(document).on('click','.btn-approve',function(){
@@ -192,18 +193,10 @@ $(function(){
             if(!result.isConfirmed) return;
 
             $.post('/admin/orders/approve/'+id)
-            .done(function(res){
-                let row = $('#order-'+id);
-
-                updateStatus(row,'Approved','bg-success');
-
-                row.find('.action-cell').html(
-                    `<button class="btn btn-sm btn-success btn-delivered" data-id="${id}">
-                        <i class="bi bi-truck"></i> Order Delivered
-                    </button>`
-                );
-
-                Swal.fire('Approved!','','success');
+            .done(function(){
+                Swal.fire('Approved!','','success').then(()=>{
+                    location.reload(); // 🔥 reload → timer start
+                });
             })
             .fail(function(xhr){
                 Swal.fire('Error!', xhr.responseJSON?.error || 'Something went wrong','error');
@@ -226,10 +219,9 @@ $(function(){
 
             $.post('/admin/orders/cancel/'+id)
             .done(function(){
-                let row = $('#order-'+id);
-                updateStatus(row,'Canceled','bg-danger');
-                removeActions(row);
-                Swal.fire('Canceled!','','success');
+                Swal.fire('Canceled!','','success').then(()=>{
+                    location.reload();
+                });
             })
             .fail(function(xhr){
                 Swal.fire('Error!', xhr.responseJSON?.error || 'Something went wrong','error');
@@ -237,39 +229,47 @@ $(function(){
         });
     });
 
-    // ================= DELIVERED =================
-    $(document).on('click','.btn-delivered',function(){
-        let id = $(this).data('id');
+    // ================= COUNTDOWN =================
+    function startCountdown(){
 
-        Swal.fire({
-            title:'Mark as delivered?',
-            icon:'question',
-            showCancelButton:true,
-            confirmButtonColor:'#198754',
-            confirmButtonText:'Yes, delivered'
-        }).then((result)=>{
-            if(!result.isConfirmed) return;
+        $('.countdown').each(function(){
 
-            $.post('/admin/orders/delivered/'+id)
-            .done(function(){
-                let row = $('#order-'+id);
-                updateStatus(row,'Delivered','bg-primary');
-                removeActions(row);
-                Swal.fire('Order Delivered!','','success');
-            })
-            .fail(function(xhr){
-                Swal.fire('Error!', xhr.responseJSON?.error || 'Something went wrong','error');
-            });
+            let el = $(this);
+
+            if(el.data('running')) return;
+            el.data('running', true);
+
+            let endTime = Date.parse(el.data('end'));
+
+            if(isNaN(endTime)){
+                el.html('<span class="text-danger">Invalid date</span>');
+                return;
+            }
+
+            function update(){
+                let now = Date.now();
+                let diff = endTime - now;
+
+                if(diff <= 0){
+                    el.html('<span class="text-danger">Expired</span>');
+                    return;
+                }
+
+                let days = Math.floor(diff / (1000*60*60*24));
+                let hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+                let minutes = Math.floor((diff % (1000*60*60)) / (1000*60));
+                let seconds = Math.floor((diff % (1000*60)) / 1000);
+
+                el.text(days+'d '+hours+'h '+minutes+'m '+seconds+'s');
+            }
+
+            update();
+            setInterval(update, 1000);
         });
-    });
+    }
 
-    // ================= SEARCH =================
-    $('#orderSearch').on('keyup',function(){
-        let value = $(this).val().toLowerCase();
-        $('tbody tr').each(function(){
-            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-        });
-    });
+    // 🔥 RUN
+    startCountdown();
 
 });
 </script>

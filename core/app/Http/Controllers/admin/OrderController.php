@@ -14,58 +14,42 @@ class OrderController extends Controller
     // ================== ORDER LIST ==================
     public function index()
     {
-        $orders = Order::with('orderdetails')->latest()->get();
+        $orders = Order::with(['orderdetails:id,order_id,pack_id,pack_name'])->latest()->get();
         return view('backend.order.index', compact('orders'));
     }
 
     // ================== APPROVE ==================
-    public function approve(int $id)
-    {
-        try {
-            DB::transaction(function () use ($id) {
+   public function approve(int $id)
+{
+    try {
+        DB::transaction(function () use ($id) {
 
-                $order = Order::with('orderdetails')->findOrFail($id);
+            $order = Order::with('orderdetails')->findOrFail($id);
 
-                // Normalize status check
-                if (strtolower(trim($order->status)) !== 'pending') {
-                    abort(400, 'Order already processed');
-                }
+            if (strtolower(trim($order->status)) !== 'pending') {
+                abort(400, 'Order already processed');
+            }
 
-                // Stock check
-                foreach ($order->orderdetails as $item) {
-                    $pack = Pack::find($item->pack_id);
+            // ✅ UPDATE WITH TIME
+            $order->status = 'approved';
+            $order->approved_at = now(); // 🔥 KEY LINE
+            $order->save();
 
-                    if (!$pack) {
-                        abort(400, 'pack not found');
-                    }
-                }
-
-                // Deduct stock
-                foreach ($order->orderdetails as $item) {
-                    Pack::where('id', $item->pack_id)
-                        ->decrement('stock', $item->pack_quantity);
-                }
-
-                // Update order
-                $order->update([
-                    'status' => 'approved'
-                ]);
-
-                $order->orderdetails()->update([
-                    'status' => 'approved'
-                ]);
-            });
-
-            return response()->json([
-                'success' => 'Order approved successfully'
+            $order->orderdetails()->update([
+                'status' => 'approved'
             ]);
+        });
 
-        } catch (\Throwable $e) {
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 400);
-        }
+        return response()->json([
+            'success' => 'Order approved successfully'
+        ]);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'error' => $e->getMessage()
+        ], 400);
     }
+}
 
     // ================== CANCEL ==================
     public function cancel(int $id)
@@ -94,38 +78,6 @@ class OrderController extends Controller
 
             return response()->json([
                 'success' => 'Order canceled successfully'
-            ]);
-
-        } catch (\Throwable $e) {
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 400);
-        }
-    }
-
-    // ================== DELIVERED ==================
-    public function delivered(int $id)
-    {
-        try {
-            DB::transaction(function () use ($id) {
-
-                $order = Order::with('orderdetails')->findOrFail($id);
-
-                if (strtolower(trim($order->status)) !== 'approved') {
-                    abort(400, 'Only approved orders can be delivered');
-                }
-
-                $order->update([
-                    'status' => 'delivered'
-                ]);
-
-                $order->orderdetails()->update([
-                    'status' => 'delivered'
-                ]);
-            });
-
-            return response()->json([
-                'success' => 'Order delivered successfully'
             ]);
 
         } catch (\Throwable $e) {

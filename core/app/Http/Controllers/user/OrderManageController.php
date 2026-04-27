@@ -41,13 +41,9 @@ class OrderManageController extends Controller
 
             if (!$pack) continue;
 
-            if ($cart->quantity > $pack->stock) {
-                return redirect()->back()->with('error', "Pack '{$pack->name}' is out of stock!");
-            }
-
             $discount = $pack->discount ?? 0;
-            $price_after_discount = $pack->price * (100 - $discount) / 100;
-            $subtotal_after_discount += $price_after_discount * $cart->quantity;
+            $price_after_discount = $pack->pack_price * (100 - $discount) / 100;
+            $subtotal_after_discount += $price_after_discount;
         }
 
         $tax_amount = ($subtotal_after_discount * $tax_percentage) / 100;
@@ -74,8 +70,7 @@ class OrderManageController extends Controller
                 'order_id'         => $order->id,
                 'pack_id'       => $cart->pack_id,
                 'pack_name'     => $cart->pack->name,
-                'pack_quantity' => $cart->quantity,
-                'pack_price'    => $cart->pack->price,
+                'pack_price'    => $cart->pack->pack_price,
                 'status'           => 'processing',
             ]);
         }

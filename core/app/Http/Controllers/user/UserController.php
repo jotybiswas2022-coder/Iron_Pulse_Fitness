@@ -62,11 +62,12 @@ class UserController extends Controller
 
     public function orders()
     {
-        $orders = Order::where('user_id', Auth::id())
+        $packs = Pack::all();
+         $orders = Order::where('user_id', Auth::id())
                        ->with('orderDetails')
                        ->latest()
                        ->get();
-        return view('frontend.user.orders', compact('orders'));
+        return view('frontend.user.orders', compact('orders', 'packs'));
     }
 
     public function contactus(Request $request)

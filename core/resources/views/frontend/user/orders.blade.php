@@ -39,13 +39,10 @@ $delivery = $settings->delivery_charge ?? '0';
             <thead>
             <tr>
                 <th>#</th>
-                <th>Product</th>
-                <th>Name</th>
+                <th>Pack Name</th>
                 <th>Price</th>
-                <th>Qty</th>
-                <th>Total</th>
-                <th>Delivery Charge</th>
-                <th>Payment Mrthod</th>
+                <th>Remaining Time</th>
+                <th>Payment Method</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -55,7 +52,7 @@ $delivery = $settings->delivery_charge ?? '0';
             @php $sl = 1; @endphp
 
             @forelse($orders as $order)
-                @foreach($order->orderdetails as $product)
+                @foreach($order->orderdetails as $pack)
 
                     @php
                         $productModel = $product->product;
@@ -96,18 +93,8 @@ $delivery = $settings->delivery_charge ?? '0';
                             <span class="sl-number">{{ $sl++ }}</span>
                         </td>
 
-                        <td data-label="Product">
-                            @if($imageUrl)
-                                <div class="product-img-wrap">
-                                    <img src="{{ $imageUrl }}">
-                                </div>
-                            @else
-                                N/A
-                            @endif
-                        </td>
-
                         <td data-label="Name" class="product-name">
-                            {{ $product->product_name }}
+                            {{ $pack->pack_name }}
                         </td>
 
                         <td data-label="Price" class="price-cell">
