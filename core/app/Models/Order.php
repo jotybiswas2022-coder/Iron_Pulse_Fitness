@@ -18,7 +18,14 @@ class Order extends Model
         'tax',
         'total_price',
         'status',
+        'approved_at',
         'payment_method', 
+    ];
+
+    protected $casts = [
+        'approved_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function orderdetails()

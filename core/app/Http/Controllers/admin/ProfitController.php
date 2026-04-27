@@ -10,7 +10,10 @@ class ProfitController extends Controller
 {
     public function index()
     {
-        $orders = Order::where('status', 'delivered')->with('orderdetails')->get();
+        $orders = Order::query()
+            ->whereIn('status', ['approved', 'delivered'])
+            ->with('orderdetails.Pack')
+            ->get();
         return view('backend.profit_loss', compact('orders'));
     }
 }

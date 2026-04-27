@@ -26,7 +26,7 @@ use Illuminate\Support\Str;
                 </li>
                 <li class="nav-item">
                     <a class="nav-link top-nav-link {{ request()->is('orders') ? 'active-link' : '' }}" href="/orders">
-                        <i class="bi bi-bag-check me-1"></i> Orders
+                        <i class="bi bi-bag-check me-1"></i> Ordered Packs
                     </a>
                 </li>
 

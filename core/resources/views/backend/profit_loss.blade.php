@@ -48,7 +48,6 @@
     </div>
 
     @php
-        use App\Models\Product;
         $ser = 1;
         $totalProfit = 0;
     @endphp
@@ -60,7 +59,7 @@
                     <thead>
                         <tr class="text-center text-white" style="background:#0d6efd;">
                             <th style="width:50px;">#</th>
-                            <th class="text-center">Product</th>
+                            <th class="text-center">Pack</th>
                             <th class="text-end">Buy Price</th>
                             <th class="text-end">Sell Price</th>
                             <th class="text-end">Profit</th>
@@ -72,23 +71,24 @@
                         @forelse ($orders as $order)
                             @foreach ($order->orderdetails as $item)
                                 @php
-                                    $sellDate = $item->created_at->toDateString();
+                                    $pack = $item->Pack;
+                                    $sellDateCarbon = $order->approved_at ?? $order->created_at;
+                                    $sellDate = optional($sellDateCarbon)->toDateString();
                                     $startDate = request('start_date');
                                     $endDate = request('end_date');
 
                                     if (($startDate && $sellDate < $startDate) || ($endDate && $sellDate > $endDate)) continue;
 
-                                    $product = Product::find($item->product_id);
-                                    $discount = $product->discount ?? 0;
-                                    $buyPrice = buyprice($item->product_id);
-                                    $sellprice = $item->product_price * (100 - $discount) / 100;
+                                    $discount = (float) ($pack->discount ?? 0);
+                                    $buyPrice = (float) ($pack->total_cost ?? 0);
+                                    $sellprice = (float) $item->pack_price * (100 - $discount) / 100;
                                     $profit = $sellprice - $buyPrice;
                                     $totalProfit += $profit;
                                 @endphp
 
                                 <tr class="text-center align-middle">
                                     <td class="fw-semibold text-muted">{{ $ser++ }}</td>
-                                    <td class="text-center fw-semibold">{{ $item->product_name }}</td>
+                                    <td class="text-center fw-semibold">{{ $item->pack_name }}</td>
                                     <td class="text-end">{{ number_format($buyPrice, 2) }}</td>
                                     <td class="text-end">{{ number_format($sellprice, 2) }}</td>
                                     <td class="text-end fw-bold {{ $profit >= 0 ? 'text-success' : 'text-danger' }}">
@@ -96,7 +96,9 @@
                                     </td>
                                     <td>
                                         <span class="badge date-badge">
-                                            {{ \Carbon\Carbon::parse($item->created_at)->timezone('Asia/Dhaka')->format('d M, Y') }}
+                                            {{ ($sellDateCarbon instanceof \Carbon\Carbon)
+                                                ? $sellDateCarbon->timezone('Asia/Dhaka')->format('d M, Y')
+                                                : '' }}
                                         </span>
                                     </td>
                                 </tr>
