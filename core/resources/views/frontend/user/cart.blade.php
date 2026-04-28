@@ -87,7 +87,7 @@ $subtotal = 0;
                         </td>
 
                         <td class="text-center">
-                            <a href="{{ route('cart.destroy', $cart->id) }}"
+                            <a href="{{ url('/manage/destroy/'.$cart->id) }}"
                                class="remove-btn">
                                 Remove
                             </a>
@@ -144,7 +144,7 @@ $subtotal = 0;
 
                 </div>
 
-                <a href="{{ route('cart.destroy', $cart->id) }}"
+                <a href="{{ url('/manage/destroy/'.$cart->id) }}"
                    class="remove-btn-mini">
                     <i class="bi bi-x-circle"></i>
                 </a>
@@ -177,7 +177,7 @@ $subtotal = 0;
                 </span>
             </div>
 
-            <a href="{{ route('billing') }}" class="btn-checkout">
+            <a href="{{ url('/billing') }}" class="btn-checkout">
                 <i class="bi bi-credit-card"></i>
                 Proceed to Checkout
             </a>

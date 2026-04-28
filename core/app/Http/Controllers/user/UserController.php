@@ -13,10 +13,12 @@ use App\Models\Pack;
 class UserController extends Controller
 {
     function cart(){
-        $subtotal = 0;
-        $discount = 0;
-        $delivery = 150; 
-        return view('frontend.user.cart', compact('subtotal', 'discount', 'delivery'));
+        $carts = Cart::with(['pack.PackCategory'])
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
+        return view('frontend.user.cart', compact('carts'));
     }
 
     function manage($type, $id){
