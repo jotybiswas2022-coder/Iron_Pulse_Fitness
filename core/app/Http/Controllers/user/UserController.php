@@ -53,7 +53,7 @@ class UserController extends Controller
             'quantity'  => 1
         ]);
 
-        return redirect('/pack/'.$pack_id)->with('success', 'Added to Cart Successfully');
+        return redirect('/pack/'.$pack_id)->with('success', 'Pack Purchased Successfully');
     }
 
     function billing(){

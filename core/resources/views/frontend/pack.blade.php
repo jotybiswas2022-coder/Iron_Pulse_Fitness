@@ -2,20 +2,23 @@
 
 @section('content')
 
+{{-- Alerts --}}
 @if (session('success'))
-    <div class="alert alert-success alert-dismissible fade show m-3 alert-success-custom" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+<div class="alert alert-success alert-dismissible fade show m-3 alert-success-custom" role="alert">
+    <i class="bi bi-check-circle-fill me-2"></i>
+    {{ session('success') }}
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+</div>
 @endif
 
 @if (session('error'))
-    <div class="alert alert-danger alert-dismissible fade show m-3 alert-danger-custom" role="alert">
-        {{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+<div class="alert alert-danger alert-dismissible fade show m-3 alert-danger-custom" role="alert">
+    {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
 @endif
 
+<!-- Product Page -->
 <div class="product-page py-5">
 
     <!-- Pack Detail -->
@@ -28,33 +31,41 @@
 
                         <!-- Image -->
                         <div class="col-md-6 text-center position-relative animate-in delay-1">
-                            <div class="image-wrapper position-relative">
+                            <div class="image-wrapper position-relative power-pulse">
                                 <img src="{{ config('app.storage_url') }}{{ $pack->image }}"
                                      alt="{{ $pack->name }}"
                                      class="img-fluid main-image">
+
                                 @if($pack->discount)
-                                    <span class="discount-badge-3d">{{ $pack->discount }}% OFF</span>
+                                <span class="discount-badge-3d">
+                                    <i class="bi bi-lightning-charge-fill gym-icon"></i> {{ $pack->discount }}% OFF
+                                </span>
                                 @endif
                             </div>
                         </div>
 
                         <!-- Details -->
                         <div class="col-md-6 animate-in delay-2">
-                            <h2 class="fw-bold mt-2 product-title">{{ $pack->name }}</h2>
+                            <h2 class="fw-bold mt-2 product-title">
+                                <i class="bi bi-award-fill gym-icon"></i> {{ $pack->name }}
+                            </h2>
 
                             <!-- Price -->
                             <div class="price-box my-4">
                                 @if($pack->discount)
                                     <div>
                                         <span class="original-price">
+                                            <i class="bi bi-currency-dollar"></i> 
                                             {{ number_format($pack->pack_price, 2) }} {{ currency() }}
                                         </span>
                                     </div>
                                     <h4 class="discounted-price">
+                                        <i class="bi bi-cash-stack"></i> 
                                         {{ number_format($pack->pack_price * (100 - $pack->discount)/100, 2) }} {{ currency() }}
                                     </h4>
                                 @else
-                                    <h4 class="final-price">
+                                    <h4 class="discounted-price">
+                                        <i class="bi bi-cash-stack"></i> 
                                         {{ number_format($pack->pack_price, 2) }} {{ currency() }}
                                     </h4>
                                 @endif
@@ -67,14 +78,15 @@
 
                             <!-- Buttons -->
                             @if (IsAddedToCart(auth()->id(), $pack->id))
-                                <button class="btn btn-dark-theme btn-lg w-100" disabled>
+                                <button class="btn btn-dark-theme btn-lg w-100">
                                     <i class="bi bi-cart-check me-2"></i> Already Added
                                 </button>
                             @else
                                 <a href="{{ url('/add_cart/'.$pack->id) }}" class="btn btn-dark-theme btn-lg w-100">
-                                    <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                                    <i class="bi bi-cart-plus me-2"></i> Purchase Pack
                                 </a>
                             @endif
+
                         </div>
 
                     </div>
@@ -85,213 +97,666 @@
 
     <!-- Related Packs -->
     <div class="container mt-5 pt-3 animate-in delay-3">
-        <h3 class="section-title mb-4">Related Packs</h3>
+        <h3 class="section-title">
+            <i class="bi bi-fire gym-icon"></i> Related Packs
+        </h3>
 
         @if($otherPacks->where('id', '!=', $pack->id)->count() > 0)
-            <div class="swiper mySwiper mt-3">
-                <div class="swiper-wrapper">
-                    @foreach($otherPacks as $item)
-                        @if($item->id != $pack->id)
-                            <div class="swiper-slide">
-                                <div class="related-card rounded-3 text-center p-3">
-                                    <a href="{{ url('/pack/'.$item->id) }}" class="text-decoration-none text-light">
-                                        <div class="related-img-wrapper position-relative mb-2">
-                                            <img src="{{ config('app.storage_url') }}{{ $item->image }}"
-                                                 class="img-fluid related-img">
-                                            @if($item->discount)
-                                                <span class="discount-badge-small">{{ $item->discount }}% OFF</span>
-                                            @endif
-                                        </div>
-                                        <h6 class="fw-semibold mb-1">{{ $item->name }}</h6>
-                                    </a>
-                                    <div class="mb-2">
-                                        @if($item->discount)
-                                            <span class="old-price small">
-                                                {{ number_format($item->pack_price,2) }} {{ currency() }}
-                                            </span> 
-                                            <span class="new-price">
-                                                 {{ number_format($item->pack_price * (100 - $item->discount)/100,2) }} {{ currency() }}
-                                            </span>
-                                        @else
-                                            <span class="new-price">
-                                                {{ number_format($item->pack_price,2) }} {{ currency() }}
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
-                </div>
+        <div class="swiper mySwiper mt-3">
+            <div class="swiper-wrapper">
 
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
+                @foreach($otherPacks as $item)
+                @if($item->id != $pack->id)
+                <div class="swiper-slide">
+                    <div class="related-card rounded-3 text-center p-3">
+                        <a href="{{ url('/pack/'.$item->id) }}" class="text-decoration-none text-light">
+                            <div class="related-img-wrapper position-relative mb-2">
+                                <img src="{{ config('app.storage_url') }}{{ $item->image }}"
+                                     class="img-fluid related-img">
+
+                                @if($item->discount)
+                                <span class="discount-badge-small">
+                                    <i class="bi bi-lightning-fill"></i> {{ $item->discount }}% OFF
+                                </span>
+                                @endif
+                            </div>
+
+                            <h6 class="fw-semibold mb-1">
+                                {{ $item->name }}
+                            </h6>
+                        </a>
+
+                        <div class="mb-2">
+                            @if($item->discount)
+                                <span class="old-price small">
+                                    {{ number_format($item->pack_price,2) }} {{ currency() }}
+                                </span> 
+                                <span class="new-price">
+                                    {{ number_format($item->pack_price * (100 - $item->discount)/100,2) }} {{ currency() }}
+                                </span>
+                            @else
+                                <span class="new-price">
+                                    {{ number_format($item->pack_price,2) }} {{ currency() }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endif
+                @endforeach
+
             </div>
+
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
         @endif
+
     </div>
 
 </div>
 
-<!-- Swiper -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
-<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+<!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 
-<script>
-var swiper = new Swiper(".mySwiper", {
-    slidesPerView: 4,
-    spaceBetween: 25,
-    loop: true,
-    autoplay: { delay: 3000, disableOnInteraction: false },
-    navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-    breakpoints: {
-        0:{slidesPerView:1, spaceBetween:15},
-        576:{slidesPerView:2, spaceBetween:20},
-        768:{slidesPerView:3, spaceBetween:20},
-        992:{slidesPerView:4, spaceBetween:25},
-    },
-});
+    <script>
+        // Swiper Initialization
+        var swiper = new Swiper(".mySwiper", {
+            slidesPerView: 4,
+            spaceBetween: 25,
+            loop: true,
+            autoplay: { 
+                delay: 3000, 
+                disableOnInteraction: false 
+            },
+            navigation: { 
+                nextEl: ".swiper-button-next", 
+                prevEl: ".swiper-button-prev" 
+            },
+            breakpoints: {
+                0: { slidesPerView: 1, spaceBetween: 15 },
+                576: { slidesPerView: 2, spaceBetween: 20 },
+                768: { slidesPerView: 3, spaceBetween: 20 },
+                992: { slidesPerView: 4, spaceBetween: 25 },
+            },
+        });
 
-// Scroll Animation
-const observerOptions = { threshold: 0.1 };
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
+        // Scroll Animation
+        const observerOptions = { 
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Auto-hide alert after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+
+        // Add muscle flex animation to buttons on hover
+        document.querySelectorAll('.btn-dark-theme').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.animation = 'muscleFlex 0.5s ease-in-out';
+            });
+            btn.addEventListener('mouseleave', function() {
+                this.style.animation = '';
+            });
+        });
+
+        // Power pulse effect on scroll
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const powerElements = document.querySelectorAll('.power-pulse');
+            
+            powerElements.forEach(el => {
+                const speed = 0.5;
+                el.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+    </script>
+
+     <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
+    
+    <style>
+        :root {
+            --primary: #0F0F0F;
+            --secondary: #E50914;
+            --accent: #FF3B3B;
+            --background: #121212;
+            --text: #FFFFFF;
         }
-    });
-}, observerOptions);
 
-document.querySelectorAll('.animate-in').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(30px)';
-    el.style.transition = 'all 0.7s ease';
-    observer.observe(el);
-});
-</script>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
-/* ===== Variables ===== */
-:root {
-    --primary: #0f172a;
-    --primary-deep: #020617;
-    --accent: #3b82f6;
-    --accent-hover: #2563eb;
-    --accent-glow: rgba(59, 130, 246, 0.4);
-    --accent-border: rgba(59, 130, 246, 0.15);
-    --text-main: #e5e7eb;
-    --text-muted: #94a3b8;
-    --text-desc: #cbd5e1;
-}
+        body {
+            background: var(--background);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
 
-/* ===== PAGE ===== */
-.product-page{ background: var(--primary-deep); min-height:100vh; }
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(229, 9, 20, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 59, 59, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            animation: pulseBackground 8s ease-in-out infinite;
+        }
 
-/* ===== ALERTS ===== */
-.alert-success-custom{ background: rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.3); color:#4ade80; border-radius:12px; }
-.alert-danger-custom{ background: rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.3); color:#f87171; border-radius:12px; }
+        @keyframes pulseBackground {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
 
-/* ===== CARD ===== */
-.product-card{
-    background: var(--primary);
-    color: var(--text-main);
-    border-radius:24px;
-    border:1px solid var(--accent-border);
-    box-shadow:0 25px 50px rgba(0,0,0,.5),0 0 80px rgba(59,130,246,.04);
-    position:relative;
-    overflow:hidden;
-}
-.product-card::before{
-    content:'';
-    position:absolute; top:-1px; left:0; right:0; height:3px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-}
+        /* Custom Alerts */
+        .alert-success-custom {
+            background: linear-gradient(135deg, #1a3a1a 0%, #2d5a2d 100%);
+            border: 2px solid #4caf50;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+            animation: slideInDown 0.5s ease-out;
+        }
 
-/* ===== IMAGE ===== */
-.image-wrapper{ border-radius:20px; overflow:hidden; background: var(--primary-deep); position:relative; border:1px solid var(--accent-border); }
-.image-wrapper::after{ content:''; position:absolute; inset:0; border-radius:20px; background: linear-gradient(180deg, transparent 60%, rgba(2,6,23,.4)); pointer-events:none; }
-.main-image{ transition: transform .5s cubic-bezier(.25,.46,.45,.94); width:100%; display:block; }
-.main-image:hover{ transform:scale(1.08); }
+        .alert-danger-custom {
+            background: linear-gradient(135deg, #3a1a1a 0%, #5a2d2d 100%);
+            border: 2px solid var(--secondary);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(229, 9, 20, 0.3);
+            animation: slideInDown 0.5s ease-out;
+        }
 
-/* ===== BADGE ===== */
-.discount-badge-3d{
-    position:absolute; top:15px; left:15px; background:linear-gradient(135deg,var(--accent),#1d4ed8);
-    color:#fff; font-weight:700; padding:10px 16px; border-radius:14px; font-size:.85rem;
-    z-index:5; box-shadow:0 8px 24px var(--accent-glow); animation: badge-pulse 2s ease-in-out infinite;
-}
-@keyframes badge-pulse{0%,100%{box-shadow:0 8px 24px var(--accent-glow);}50%{box-shadow:0 8px 32px rgba(59,130,246,.6);}}
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
 
-/* ===== TITLE ===== */
-.product-title{ color:#fff; font-size:1.75rem; font-weight:800; line-height:1.3; letter-spacing:-0.5px; }
+        /* Product Card */
+        .product-card {
+            background: linear-gradient(145deg, rgba(25, 25, 25, 0.95) 0%, rgba(15, 15, 15, 0.95) 100%);
+            border: 2px solid rgba(229, 9, 20, 0.3);
+            border-radius: 20px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                inset 0 0 30px rgba(229, 9, 20, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
 
-/* ===== PRICE ===== */
-.price-box{
-    background: var(--primary-deep); padding:18px 24px; border-radius:16px; display:inline-block; border:1px solid var(--accent-border); position:relative;
-}
-.price-box::before{ content:''; position:absolute; inset:-1px; border-radius:16px; background:linear-gradient(135deg, rgba(59,130,246,.2), transparent); z-index:0; pointer-events:none; }
-.original-price{ color:var(--text-muted); text-decoration:line-through; font-size:.95rem; position:relative; z-index:1; }
-.discounted-price, .final-price{ color:var(--accent); font-weight:800; font-size:1.6rem; position:relative; z-index:1; }
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(229, 9, 20, 0.1),
+                transparent
+            );
+            animation: shimmer 3s infinite;
+        }
 
-/* ===== STOCK ===== */
-.stock-status .progress{ height:6px; background:rgba(255,255,255,.06); border-radius:10px; overflow:hidden; }
-.stock-status .progress-bar.bg-success{ background: linear-gradient(90deg,#22c55e,#4ade80)!important; box-shadow:0 0 12px rgba(34,197,94,.4); }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
 
-/* ===== DESCRIPTION ===== */
-.description-box{ max-height:220px; overflow-y:auto; padding:18px; background: var(--primary-deep); border-radius:16px; color: var(--text-desc); border:1px solid var(--accent-border); line-height:1.7; font-size:.92rem; }
-.description-box::-webkit-scrollbar{ width:5px; }
-.description-box::-webkit-scrollbar-thumb{ background:var(--accent); border-radius:10px; }
-.description-box::-webkit-scrollbar-track{ background:transparent; }
+        /* Image Wrapper */
+        .image-wrapper {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(229, 9, 20, 0.4);
+            animation: floatImage 4s ease-in-out infinite;
+        }
 
-/* ===== BUTTON ===== */
-.btn-dark-theme{
-    background: linear-gradient(135deg, var(--accent), #1d4ed8); color:#fff; font-weight:700; border-radius:14px; border:none; padding:14px 28px; font-size:1.05rem; transition:all .35s cubic-bezier(.25,.46,.45,.94); position:relative; overflow:hidden;
-}
-.btn-dark-theme::before{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent); transition:left .6s; }
-.btn-dark-theme:hover::before{ left:100%; }
-.btn-dark-theme:hover{ background:linear-gradient(135deg,var(--accent-hover),#1e40af); transform:translateY(-3px); box-shadow:0 12px 30px var(--accent-glow); }
-.btn-dark-theme:disabled{ background:#1e293b; color:var(--text-muted); transform:none; box-shadow:none; cursor:not-allowed; }
-.btn-dark-theme:disabled::before{ display:none; }
+        @keyframes floatImage {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-10px) scale(1.02); }
+        }
 
-/* ===== FEATURES ===== */
-.feature-strip{ display:flex; gap:12px; flex-wrap:wrap; margin-top:16px; }
-.feature-item{ display:flex; align-items:center; gap:8px; background: var(--primary-deep); border:1px solid var(--accent-border); border-radius:12px; padding:8px 14px; font-size:.82rem; color:var(--text-muted); }
-.feature-item i{ color:var(--accent); font-size:1rem; }
+        .main-image {
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+            transition: transform 0.5s ease;
+            border: 3px solid rgba(229, 9, 20, 0.4);
+        }
 
-/* ===== RELATED SECTION ===== */
-.section-title{ color:#fff; font-weight:800; font-size:1.6rem; position:relative; display:inline-block; }
-.section-title::after{ content:''; position:absolute; bottom:-8px; left:0; width:50px; height:3px; background:var(--accent); border-radius:10px; }
+        .image-wrapper:hover .main-image {
+            transform: scale(1.05);
+        }
 
-/* ===== RELATED CARDS ===== */
-.related-card{ background:var(--primary); border:1px solid var(--accent-border); border-radius:18px; transition:all .4s cubic-bezier(.25,.46,.45,.94); min-height:360px; overflow:hidden; }
-.related-card:hover{ transform:translateY(-8px); box-shadow:0 20px 50px rgba(0,0,0,.6),0 0 40px rgba(59,130,246,.08); border-color:rgba(59,130,246,.3); }
-.related-img-wrapper{ border-radius:14px; overflow:hidden; background: var(--primary-deep); }
-.related-img{ height:220px; width:100%; object-fit:cover; border-radius:14px; transition: transform .4s; }
-.related-card:hover .related-img{ transform:scale(1.06); }
-.discount-badge-small{ position:absolute; top:10px; left:10px; background:linear-gradient(135deg,var(--accent),#1d4ed8); color:#fff; padding:5px 10px; border-radius:10px; font-size:.75rem; font-weight:700; z-index:2; }
-.old-price{ color:var(--text-muted); text-decoration:line-through; font-size:.85rem; }
-.new-price{ color:var(--accent); font-weight:700; font-size:1rem; }
+        /* Discount Badge */
+        .discount-badge-3d {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 
+                0 8px 20px rgba(229, 9, 20, 0.6),
+                inset 0 -3px 10px rgba(0, 0, 0, 0.3);
+            animation: pulseBadge 2s ease-in-out infinite;
+            z-index: 10;
+        }
 
-/* ===== SWIPER NAV ===== */
-.swiper-button-next, .swiper-button-prev{
-    color:var(--accent)!important; background:var(--primary); width:44px; height:44px; border-radius:12px; border:1px solid var(--accent-border); transition:.3s;
-}
-.swiper-button-next::after, .swiper-button-prev::after{ font-size:16px; font-weight:900; }
-.swiper-button-next:hover, .swiper-button-prev:hover{ background:var(--accent); color:#fff!important; box-shadow:0 8px 20px var(--accent-glow); }
+        @keyframes pulseBadge {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(3deg); }
+        }
 
-/* ===== ANIMATIONS ===== */
-@keyframes fadeInUp{ from{opacity:0; transform:translateY(30px);} to{opacity:1; transform:translateY(0);} }
-.animate-in{ animation:fadeInUp .7s ease forwards; }
-.delay-1{ animation-delay:.1s; }
-.delay-2{ animation-delay:.2s; }
-.delay-3{ animation-delay:.3s; }
+        /* Product Title */
+        .product-title {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #fff 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
 
-/* ===== SCROLLBAR ===== */
-::-webkit-scrollbar{ width:8px; }
-::-webkit-scrollbar-track{ background: var(--primary-deep); }
-::-webkit-scrollbar-thumb{ background: var(--accent); border-radius:10px; }
+        @keyframes titlePulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(229, 9, 20, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(229, 9, 20, 0.8); }
+        }
 
-/* ===== RESPONSIVE ===== */
-@media(max-width:767px){ .product-title{ font-size:1.35rem; } .discounted-price,.final-price{ font-size:1.3rem; } .product-card{ border-radius:18px; } }
-</style>
+        /* Price Box */
+        .price-box {
+            background: rgba(229, 9, 20, 0.1);
+            border: 2px solid var(--secondary);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .price-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: priceShine 3s infinite;
+        }
+
+        @keyframes priceShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #888;
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+
+        .discounted-price,
+        .final-price {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px rgba(255, 59, 59, 0.5);
+            animation: priceGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes priceGlow {
+            0%, 100% { text-shadow: 0 0 20px rgba(255, 59, 59, 0.5); }
+            50% { text-shadow: 0 0 30px rgba(255, 59, 59, 0.8); }
+        }
+
+        /* Description Box */
+        .description-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid var(--accent);
+            padding: 20px;
+            border-radius: 8px;
+            line-height: 1.8;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Button */
+        .btn-dark-theme {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-dark-theme::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-dark-theme:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-dark-theme:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(229, 9, 20, 0.6);
+        }
+
+        .btn-dark-theme:disabled {
+            background: linear-gradient(135deg, #555 0%, #333 100%);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-dark-theme i {
+            position: relative;
+            z-index: 1;
+            animation: iconBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(5px); }
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 2rem;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: bold;
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            animation: lineExpand 2s ease-in-out infinite;
+        }
+
+        @keyframes lineExpand {
+            0%, 100% { width: 80px; }
+            50% { width: 120px; }
+        }
+
+        /* Related Cards */
+        .related-card {
+            background: linear-gradient(145deg, rgba(30, 30, 30, 0.9) 0%, rgba(20, 20, 20, 0.9) 100%);
+            border: 2px solid rgba(229, 9, 20, 0.2);
+            transition: all 0.4s ease;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .related-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .related-card:hover::before {
+            left: 100%;
+        }
+
+        .related-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            border-color: var(--accent);
+            box-shadow: 
+                0 20px 40px rgba(229, 9, 20, 0.4),
+                0 0 30px rgba(255, 59, 59, 0.3);
+        }
+
+        .related-img-wrapper {
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(229, 9, 20, 0.3);
+        }
+
+        .related-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .related-card:hover .related-img {
+            transform: scale(1.1) rotate(2deg);
+        }
+
+        .discount-badge-small {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(229, 9, 20, 0.5);
+            animation: badgePulse 2s infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .new-price {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Swiper Navigation */
+        .swiper-button-next,
+        .swiper-button-prev {
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: #fff !important;
+            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .swiper-button-next:hover,
+        .swiper-button-prev:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(229, 9, 20, 0.6);
+        }
+
+        .swiper-button-next::after,
+        .swiper-button-prev::after {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* Animations */
+        .animate-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.7s ease;
+        }
+
+        .animate-in.delay-1 {
+            transition-delay: 0.2s;
+        }
+
+        .animate-in.delay-2 {
+            transition-delay: 0.4s;
+        }
+
+        .animate-in.delay-3 {
+            transition-delay: 0.6s;
+        }
+
+        /* Strength Bar Animation */
+        @keyframes strengthBar {
+            0%, 100% { width: 0%; }
+            50% { width: 100%; }
+        }
+
+        /* Gym Equipment Icon Animation */
+        .gym-icon {
+            display: inline-block;
+            animation: liftWeight 2s ease-in-out infinite;
+        }
+
+        @keyframes liftWeight {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-5px) rotate(-5deg); }
+            75% { transform: translateY(-5px) rotate(5deg); }
+        }
+
+        /* Muscle Flex Effect */
+        @keyframes muscleFlex {
+            0%, 100% { transform: scaleX(1); }
+            50% { transform: scaleX(1.05); }
+        }
+
+        /* Power Pulse Effect */
+        .power-pulse {
+            position: relative;
+        }
+
+        .power-pulse::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--accent);
+            border-radius: inherit;
+            transform: translate(-50%, -50%);
+            animation: powerPulse 2s infinite;
+            opacity: 0;
+        }
+
+        @keyframes powerPulse {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .product-title {
+                font-size: 1.8rem;
+            }
+
+            .discounted-price,
+            .final-price {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 
 @endsection
