@@ -32,7 +32,7 @@
                         <!-- Image -->
                         <div class="col-md-6 text-center position-relative animate-in delay-1">
                             <div class="image-wrapper position-relative power-pulse">
-                                <img src="{{ config('app.storage_url') }}{{ $pack->image }}"
+                                <img src="{{ $pack->image ? config('app.storage_url') . $pack->image : asset('frontend/img/product1.jpg') }}"
                                      alt="{{ $pack->name }}"
                                      class="img-fluid main-image">
 
@@ -73,7 +73,7 @@
 
                             <!-- Description -->
                             <div class="description-box mb-4">
-                                {!! $pack->details !!}
+                                {!! $pack->details ?? '<p class="mb-0 text-muted">No details available.</p>' !!}
                             </div>
 
                             <!-- Buttons -->
@@ -156,61 +156,70 @@
 
 </div>
 
-<!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 
     <script>
+        document.documentElement.classList.add('js');
+
         // Swiper Initialization
-        var swiper = new Swiper(".mySwiper", {
-            slidesPerView: 4,
-            spaceBetween: 25,
-            loop: true,
-            autoplay: { 
-                delay: 3000, 
-                disableOnInteraction: false 
-            },
-            navigation: { 
-                nextEl: ".swiper-button-next", 
-                prevEl: ".swiper-button-prev" 
-            },
-            breakpoints: {
-                0: { slidesPerView: 1, spaceBetween: 15 },
-                576: { slidesPerView: 2, spaceBetween: 20 },
-                768: { slidesPerView: 3, spaceBetween: 20 },
-                992: { slidesPerView: 4, spaceBetween: 25 },
-            },
-        });
-
-        // Scroll Animation
-        const observerOptions = { 
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
+        if (document.querySelector('.mySwiper') && typeof Swiper !== 'undefined') {
+            new Swiper(".mySwiper", {
+                slidesPerView: 4,
+                spaceBetween: 25,
+                loop: true,
+                autoplay: {
+                    delay: 3000,
+                    disableOnInteraction: false
+                },
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev"
+                },
+                breakpoints: {
+                    0: { slidesPerView: 1, spaceBetween: 15 },
+                    576: { slidesPerView: 2, spaceBetween: 20 },
+                    768: { slidesPerView: 3, spaceBetween: 20 },
+                    992: { slidesPerView: 4, spaceBetween: 25 },
+                },
             });
-        }, observerOptions);
+        }
 
-        document.querySelectorAll('.animate-in').forEach(el => {
-            observer.observe(el);
-        });
+        // Scroll animation (safe fallback: keep content visible if observer is unavailable)
+        if ('IntersectionObserver' in window) {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.animate-in').forEach(el => {
+                observer.observe(el);
+            });
+        } else {
+            document.querySelectorAll('.animate-in').forEach(el => {
+                el.classList.add('is-visible');
+            });
+        }
 
         // Auto-hide alert after 5 seconds
-        setTimeout(() => {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
+        if (typeof bootstrap !== 'undefined') {
+            setTimeout(() => {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        }
 
         // Add muscle flex animation to buttons on hover
         document.querySelectorAll('.btn-dark-theme').forEach(btn => {
@@ -234,12 +243,6 @@
         });
     </script>
 
-     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
     
@@ -671,9 +674,19 @@
 
         /* Animations */
         .animate-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.7s ease;
+        }
+
+        .js .animate-in {
             opacity: 0;
             transform: translateY(30px);
-            transition: all 0.7s ease;
+        }
+
+        .js .animate-in.is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .animate-in.delay-1 {
