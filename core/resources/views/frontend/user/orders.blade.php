@@ -728,13 +728,22 @@ startCountdown();
         }
 
         /* Modal Styles */
-        .order-modal .modal-content {
+        .order-modal {
             background: linear-gradient(135deg, var(--deep-black) 0%, #1a1a1a 100%);
             border: 2px solid var(--power-red);
             border-radius: 15px;
             color: var(--text);
             box-shadow: 0 0 50px rgba(229, 9, 20, 0.5);
             animation: modalZoom 0.3s ease-out;
+        }
+
+        .order-modal .modal-body {
+            color: var(--text);
+        }
+
+        .order-modal .modal-body .small > div:first-child,
+        .order-modal .modal-body .row.small > div > div:first-child {
+            color: #c7c7c7;
         }
 
         @keyframes modalZoom {

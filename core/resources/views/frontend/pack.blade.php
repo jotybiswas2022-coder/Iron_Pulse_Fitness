@@ -2,6 +2,12 @@
 
 @section('content')
 
+@php
+    $packDetails = (string) ($pack->details ?? '');
+    $packDetails = preg_replace('/<style\b[^>]*>.*?<\/style>/is', '', $packDetails);
+    $packDetails = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $packDetails);
+@endphp
+
 {{-- Alerts --}}
 @if (session('success'))
 <div class="alert alert-success alert-dismissible fade show m-3 alert-success-custom" role="alert">
@@ -19,22 +25,22 @@
 @endif
 
 <!-- Product Page -->
-<div class="product-page py-12 relative z-1">
+<div class="product-page py-5">
 
     <!-- Pack Detail -->
-    <div class="container mx-auto px-4">
-        <div class="flex justify-center">
-            <div class="w-full max-w-6xl">
-                <div class="product-card p-8 md:p-12">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="product-card p-4 p-md-5">
 
-                    <div class="grid md:grid-cols-2 gap-12 items-start">
+                    <div class="row g-5 align-items-start">
 
                         <!-- Image -->
-                        <div class="text-center relative animate-in delay-1">
-                            <div class="image-wrapper relative power-pulse">
+                        <div class="col-md-6 text-center position-relative animate-in delay-1">
+                            <div class="image-wrapper position-relative power-pulse">
                                 <img src="{{ $pack->image ? config('app.storage_url') . $pack->image : asset('frontend/img/product1.jpg') }}"
                                      alt="{{ $pack->name }}"
-                                     class="w-full main-image">
+                                     class="img-fluid main-image">
 
                                 @if($pack->discount)
                                 <span class="discount-badge-3d">
@@ -45,44 +51,44 @@
                         </div>
 
                         <!-- Details -->
-                        <div class="animate-in delay-2">
-                            <h2 class="product-title mt-2">
+                        <div class="col-md-6 animate-in delay-2">
+                            <h2 class="fw-bold mt-2 product-title">
                                 <i class="bi bi-award-fill gym-icon"></i> {{ $pack->name }}
                             </h2>
 
                             <!-- Price -->
-                            <div class="price-box my-6">
+                            <div class="price-box my-4">
                                 @if($pack->discount)
                                     <div>
                                         <span class="original-price">
-                                            <i class="bi bi-currency-dollar"></i>
+                                            <i class="bi bi-currency-dollar"></i> 
                                             {{ number_format($pack->pack_price, 2) }} {{ currency() }}
                                         </span>
                                     </div>
                                     <h4 class="discounted-price">
-                                        <i class="bi bi-cash-stack"></i>
+                                        <i class="bi bi-cash-stack"></i> 
                                         {{ number_format($pack->pack_price * (100 - $pack->discount)/100, 2) }} {{ currency() }}
                                     </h4>
                                 @else
                                     <h4 class="discounted-price">
-                                        <i class="bi bi-cash-stack"></i>
+                                        <i class="bi bi-cash-stack"></i> 
                                         {{ number_format($pack->pack_price, 2) }} {{ currency() }}
                                     </h4>
                                 @endif
                             </div>
 
                             <!-- Description -->
-                            <div class="description-box mb-6">
-                                {!! $pack->details ?? '<p class="text-muted">No details available.</p>' !!}
+                            <div class="description-box mb-4">
+                                {!! $packDetails !== '' ? $packDetails : '<p class="mb-0 text-muted">No details available.</p>' !!}
                             </div>
 
-                            <!-- Button -->
+                            <!-- Buttons -->
                             @if (IsAddedToCart(auth()->id(), $pack->id))
-                                <button class="btn-dark-theme w-full">
+                                <button class="btn btn-dark-theme btn-lg w-100">
                                     <i class="bi bi-cart-check me-2"></i> Already Added
                                 </button>
                             @else
-                                <a href="{{ url('/add_cart/'.$pack->id) }}" class="btn-dark-theme w-full inline-block text-center">
+                                <a href="{{ url('/add_cart/'.$pack->id) }}" class="btn btn-dark-theme btn-lg w-100">
                                     <i class="bi bi-cart-plus me-2"></i> Purchase Pack
                                 </a>
                             @endif
@@ -96,23 +102,23 @@
     </div>
 
     <!-- Related Packs -->
-    <div class="container mx-auto px-4 mt-16 pt-8 animate-in delay-3">
+    <div class="container mt-5 pt-3 animate-in delay-3">
         <h3 class="section-title">
             <i class="bi bi-fire gym-icon"></i> Related Packs
         </h3>
 
         @if($otherPacks->where('id', '!=', $pack->id)->count() > 0)
-        <div class="swiper mySwiper mt-8">
+        <div class="swiper mySwiper mt-3">
             <div class="swiper-wrapper">
 
                 @foreach($otherPacks as $item)
                 @if($item->id != $pack->id)
                 <div class="swiper-slide">
-                    <div class="related-card rounded-3xl text-center p-4">
-                        <a href="{{ url('/pack/'.$item->id) }}" class="text-white no-underline">
-                            <div class="related-img-wrapper relative mb-3">
+                    <div class="related-card rounded-3 text-center p-3">
+                        <a href="{{ url('/pack/'.$item->id) }}" class="text-decoration-none text-light">
+                            <div class="related-img-wrapper position-relative mb-2">
                                 <img src="{{ config('app.storage_url') }}{{ $item->image }}"
-                                     class="related-img rounded-lg">
+                                     class="img-fluid related-img">
 
                                 @if($item->discount)
                                 <span class="discount-badge-small">
@@ -121,16 +127,16 @@
                                 @endif
                             </div>
 
-                            <h6 class="font-semibold mb-2 text-lg">
+                            <h6 class="fw-semibold mb-1">
                                 {{ $item->name }}
                             </h6>
                         </a>
 
-                        <div class="mb-3">
+                        <div class="mb-2">
                             @if($item->discount)
-                                <span class="old-price text-sm">
+                                <span class="old-price small">
                                     {{ number_format($item->pack_price,2) }} {{ currency() }}
-                                </span>
+                                </span> 
                                 <span class="new-price">
                                     {{ number_format($item->pack_price * (100 - $item->discount)/100,2) }} {{ currency() }}
                                 </span>
@@ -155,6 +161,7 @@
     </div>
 
 </div>
+
 
 <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
