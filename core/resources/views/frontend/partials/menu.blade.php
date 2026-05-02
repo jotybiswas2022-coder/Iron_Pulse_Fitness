@@ -16,7 +16,7 @@
         </button>
 
         <!-- Top Nav Links -->
-        <div class="collapse navbar-collapse" id="navbarTopNav">
+        <div class="collapse navbar-collapse show" id="navbarTopNav">
             <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
 
                 <li class="nav-item">
@@ -210,6 +210,7 @@
             top: 0;
             z-index: 1050;
             box-shadow: 0 4px 20px rgba(229, 9, 20, 0.2);
+            isolation: isolate;
         }
 
         /* Brand */
@@ -258,7 +259,7 @@
         .navbar .gym-nav-link {
             font-weight: 600;
             font-size: 1.1rem;
-            color: #FFFFFF;
+            color: #FFFFFF !important;
             transition: all .3s ease;
             padding: 10px 16px;
             border-radius: 8px;
@@ -336,6 +337,19 @@
             top: 76px;
             z-index: 1040;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            isolation: isolate;
+        }
+
+        @media (min-width: 992px) {
+            #navbarTopNav {
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+
+            .gym-navbar .navbar-nav {
+                display: flex !important;
+            }
         }
 
         /* Search */
@@ -682,6 +696,10 @@
                 margin-top: 15px;
                 padding: 20px;
                 border: 2px solid rgba(229, 9, 20, 0.3);
+            }
+
+            #navbarTopNav:not(.show) {
+                display: none !important;
             }
 
             .join-btn {
